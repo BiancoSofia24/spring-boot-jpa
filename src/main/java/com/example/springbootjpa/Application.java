@@ -43,12 +43,6 @@ public class Application {
 			Long count = repository.count();
 			log.info("STUDENTS NUMBER: " + count);
 
-			log.info("FIND STUDENT WITH THE id 2");
-			repository.findById(2L)
-				.ifPresentOrElse(System.out::println, () -> {
-					log.error("STUDENT WITH id 2 NOT FOUND");
-				});
-
 			log.info("FIND STUDENT WITH THE id 3");
 			repository.findById(3L)
 				.ifPresentOrElse(System.out::println, () -> {
