@@ -3,6 +3,8 @@ package com.example.springbootjpa;
 import java.util.List;
 
 import com.example.springbootjpa.models.Student;
+import com.example.springbootjpa.models.StudentIdCard;
+import com.example.springbootjpa.repository.StudentIdCardRepository;
 import com.example.springbootjpa.repository.StudentRepository;
 import com.github.javafaker.Faker;
 
@@ -22,24 +24,27 @@ public class Application {
 	}
 
 	@Bean
-	CommandLineRunner commandLineRunner(StudentRepository repository) {
+	CommandLineRunner commandLineRunner(StudentRepository repository, StudentIdCardRepository cardRepository) {
 		return args -> {
-			generateRandomStudents(repository);
+			Faker faker = new Faker();
+			String firstName = faker.name().firstName();
+			String lastName = faker.name().lastName();
+			String email = String.format("%s.%s@mail.com", firstName, lastName);
 
-			PageRequest pageRequest = PageRequest.of(0, 5, Sort.by("firstName").ascending());
-			Page<Student> page = repository.findAll(pageRequest);
-			System.out.println(page);
+			Student student = new Student(
+				firstName, 
+				lastName, 
+				email, 
+				faker.number().numberBetween(16, 52));
+			
+				StudentIdCard studentIdCard = new StudentIdCard("123456789", student);
+				cardRepository.save(studentIdCard);
+
+				repository.findById(1L).ifPresent(System.out::println);
+				cardRepository.findById(1L).ifPresent(System.out::println);
+
+				repository.deleteById(1L);
 		};
-	}
-
-	private void sorting(StudentRepository repository) {
-		Sort sort = Sort.by("firstName").ascending()
-			.and(Sort.by("age").descending());
-
-		repository.findAll(sort)
-			.forEach((student) -> {
-				System.out.println(student.getFirstName() + " " + student.getAge());
-			});
 	}
 
 	private void generateRandomStudents(StudentRepository repository) {

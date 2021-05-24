@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -29,8 +30,7 @@ public class Student {
         generator = "student_sequence"
     )
     @Column(
-        name = "id",
-        updatable = false
+        name = "id"
     )
     private Long id;
 
@@ -60,6 +60,12 @@ public class Student {
         nullable = false
     )
     private Integer age;
+
+    @OneToOne(
+        mappedBy = "student",
+        orphanRemoval = true
+    )
+    private StudentIdCard studentIdCard;
 
     public Student() {
     }
