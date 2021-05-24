@@ -4,13 +4,15 @@ import java.util.List;
 
 import com.example.springbootjpa.models.Student;
 import com.example.springbootjpa.repository.StudentRepository;
+import com.github.javafaker.Faker;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @SpringBootApplication
 public class Application {
@@ -19,56 +21,41 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
-	private static final Logger log = LoggerFactory.getLogger(Application.class);
-
 	@Bean
 	CommandLineRunner commandLineRunner(StudentRepository repository) {
 		return args -> {
-			Student sofia = new Student(
-				"Sofia",
-				"Bianco",
-				"sofia@mail.com",
-				28
-			);
-			Student franz = new Student(
-				"Franz",
-				"Pups",
-				"franz-cat@mail.com",
-				1
-			);
-			Student sofia2 = new Student(
-				"Sofia",
-				"Vergara",
-				"sofia2@mail.com",
-				28
-			);
+			generateRandomStudents(repository);
 
-			log.info("ADDING STUDENTS: ");
-			repository.saveAll(List.of(sofia, franz, sofia2));
-
-			Long count = repository.count();
-			log.info("STUDENTS NUMBER: " + count);
-
-			log.info("SELECT ALL STUDENTS");
-			List<Student> studentsList = repository.findAll();
-			studentsList.forEach(System.out::println);
-
-			log.info("DELETE STUDENT: Franz");
-			repository.deleteById(2L);
-
-			repository.findStudentByEmail("sofia@mail.com")
-				.ifPresentOrElse(System.out::println, () -> {
-					log.error("STUDENT WITH EMAIL sofia2@mail.com NOT FOUND");
-				});
-
-			repository.selectStudentWhereFirstNameAndAgeGreaterOrEqual("Sofia", 28)
-				.forEach(System.out::println);
-			
-			repository.selectStudentWhereFirstNameAndAgeGreaterOrEqualNative("Sofia", 28)
-				.forEach(System.out::println);
-
-			log.info("DELETE STUDENT: sofia2");
-			System.out.println(repository.deleteStudentById(3L));
+			PageRequest pageRequest = PageRequest.of(0, 5, Sort.by("firstName").ascending());
+			Page<Student> page = repository.findAll(pageRequest);
+			System.out.println(page);
 		};
+	}
+
+	private void sorting(StudentRepository repository) {
+		Sort sort = Sort.by("firstName").ascending()
+			.and(Sort.by("age").descending());
+
+		repository.findAll(sort)
+			.forEach((student) -> {
+				System.out.println(student.getFirstName() + " " + student.getAge());
+			});
+	}
+
+	private void generateRandomStudents(StudentRepository repository) {
+		Faker faker = new Faker();
+		for (int i = 0; i < 20; i++) {
+			String firstName = faker.name().firstName();
+			String lastName = faker.name().lastName();
+			String email = String.format("%s.%s@mail.com", firstName, lastName);
+
+			Student student = new Student(
+				firstName, 
+				lastName, 
+				email, 
+				faker.number().numberBetween(16, 52));
+
+			repository.save(student);
+		}
 	}
 }
