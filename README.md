@@ -7,3 +7,4 @@ Focus on **JPA**
 - PostgreSQL
 - Spring Boot Starter Web
 - Spring Boot Devtools
+- JavaFaker

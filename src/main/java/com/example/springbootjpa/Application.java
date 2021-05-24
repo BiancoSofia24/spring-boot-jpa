@@ -36,18 +36,18 @@ public class Application {
 				"franz-cat@mail.com",
 				1
 			);
+			Student sofia2 = new Student(
+				"Sofia",
+				"Vergara",
+				"sofia2@mail.com",
+				28
+			);
 
 			log.info("ADDING STUDENTS: ");
-			repository.saveAll(List.of(sofia, franz));
+			repository.saveAll(List.of(sofia, franz, sofia2));
 
 			Long count = repository.count();
 			log.info("STUDENTS NUMBER: " + count);
-
-			log.info("FIND STUDENT WITH THE id 3");
-			repository.findById(3L)
-				.ifPresentOrElse(System.out::println, () -> {
-					log.error("STUDENT WITH id 3 NOT FOUND");
-				});
 
 			log.info("SELECT ALL STUDENTS");
 			List<Student> studentsList = repository.findAll();
@@ -56,8 +56,19 @@ public class Application {
 			log.info("DELETE STUDENT: Franz");
 			repository.deleteById(2L);
 
-			count = repository.count();
-			log.info("STUDENTS NUMBER: " + count);	
+			repository.findStudentByEmail("sofia@mail.com")
+				.ifPresentOrElse(System.out::println, () -> {
+					log.error("STUDENT WITH EMAIL sofia2@mail.com NOT FOUND");
+				});
+
+			repository.selectStudentWhereFirstNameAndAgeGreaterOrEqual("Sofia", 28)
+				.forEach(System.out::println);
+			
+			repository.selectStudentWhereFirstNameAndAgeGreaterOrEqualNative("Sofia", 28)
+				.forEach(System.out::println);
+
+			log.info("DELETE STUDENT: sofia2");
+			System.out.println(repository.deleteStudentById(3L));
 		};
 	}
 }
