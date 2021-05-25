@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.springbootjpa.models.Book;
+import com.example.springbootjpa.models.Course;
+import com.example.springbootjpa.models.Course;
 import com.example.springbootjpa.models.Student;
 import com.example.springbootjpa.models.StudentIdCard;
 import com.example.springbootjpa.repository.StudentIdCardRepository;
@@ -53,6 +55,17 @@ public class Application {
 
 			repository.findById(1L).ifPresent(System.out::println);
 			cardRepository.findById(1L).ifPresent(System.out::println);
+
+			System.out.println("ENROLLING TO COURSES");
+			student.enrolToCourse(new Course("Spring Boot", "IT"));
+			student.enrolToCourse(new Course("React", "IT"));
+			student.enrolToCourse(new Course("Scrum", "Agile"));
+			student.getCourses().forEach((course) -> {
+				System.out.println(course);
+			});
+			
+			// The courses are being created with id = null
+			// repository.save(student);
 
 			// repository.deleteById(1L);
 		};
