@@ -13,7 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-@Entity
+@Entity(name = "StudentIdCard")
 @Table(
     name = "student_id_card",
     uniqueConstraints = {

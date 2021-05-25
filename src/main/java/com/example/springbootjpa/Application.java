@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.example.springbootjpa.models.Book;
+import com.example.springbootjpa.models.Course;
+import com.example.springbootjpa.models.Enrolment;
+import com.example.springbootjpa.models.EnrolmentId;
 import com.example.springbootjpa.models.Student;
 import com.example.springbootjpa.models.StudentIdCard;
 import com.example.springbootjpa.repository.StudentIdCardRepository;
@@ -25,37 +28,66 @@ public class Application {
 	@Bean
 	CommandLineRunner commandLineRunner(StudentRepository repository, StudentIdCardRepository cardRepository) {
 		return args -> {
-			Faker faker = new Faker();
-			String firstName = faker.name().firstName();
-			String lastName = faker.name().lastName();
-			String email = String.format("%s.%s@mail.com", firstName, lastName);
+            Faker faker = new Faker();
 
-			System.out.println("ADDING STUDENT");
-			Student student = new Student(firstName, lastName, email, faker.number().numberBetween(16, 52));
-			System.out.println(student);
+            String firstName = faker.name().firstName();
+            String lastName = faker.name().lastName();
+            String email = String.format("%s.%s@mail.com", firstName, lastName);
+            Student student = new Student(
+                    firstName,
+                    lastName,
+                    email,
+                    faker.number().numberBetween(17, 55));
 
-			System.out.println("ADDING BOOKS");
-			student.addBook(new Book(LocalDateTime.now().minusDays(4), "Clean Code"));
-			student.addBook(new Book(LocalDateTime.now(), "Clean Architecture"));
-			student.addBook(new Book(LocalDateTime.now().minusYears(1), "Spring Boot Framework"));
+            student.addBook(
+                    new Book(LocalDateTime.now().minusDays(4), "Clean Code"));
 
-			System.out.println("ADDING STUDENT ID CARD");
-			StudentIdCard studentIdCard = new StudentIdCard("123456789", student);
-			cardRepository.save(studentIdCard);
+            student.addBook(
+                    new Book(LocalDateTime.now(), "Clean Architecture"));
 
-			repository.findById(1L).ifPresent((s) -> {
-				System.out.println("FETCH BOOK LAZY...");
-				List<Book> books = student.getBooks();
-				books.forEach((book) -> {
-					System.out.println(s.getFirstName() + " borrowed " + book.getBookName());
-				});
-			});
+            student.addBook(
+                    new Book(LocalDateTime.now().minusYears(1), "Spring Data JPA"));
 
-			repository.findById(1L).ifPresent(System.out::println);
-			cardRepository.findById(1L).ifPresent(System.out::println);
+            StudentIdCard studentIdCard = new StudentIdCard(
+                    "123456789",
+                    student);
 
-			// repository.deleteById(1L);
-		};
+            student.setStudentIdCard(studentIdCard);
+
+            student.addEnrolment(new Enrolment(
+                    new EnrolmentId(1L, 1L),
+                    student,
+                    new Course("React", "IT"),
+                    LocalDateTime.now()
+            ));
+
+            student.addEnrolment(new Enrolment(
+                    new EnrolmentId(1L, 2L),
+                    student,
+                    new Course("Spring Boot", "IT"),
+                    LocalDateTime.now().minusDays(18)
+            ));
+
+            student.addEnrolment(new Enrolment(
+                    new EnrolmentId(1L, 2L),
+                    student,
+                    new Course("Spring Boot", "IT"),
+                    LocalDateTime.now().minusDays(18)
+            ));
+
+            repository.save(student);
+
+            repository.findById(1L)
+                    .ifPresent(s -> {
+                        System.out.println("Fetch books lazy...");
+                        List<Book> books = student.getBooks();
+                        books.forEach(book -> {
+                            System.out.println(
+                                    s.getFirstName() + " borrowed " + book.getBookName());
+                        });
+                    });
+
+        };
 	}
 
 }

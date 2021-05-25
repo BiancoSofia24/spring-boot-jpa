@@ -31,6 +31,10 @@ public class Book {
         strategy = GenerationType.SEQUENCE,
         generator = "book_sequence"
     )
+    @Column(
+        name = "id",
+        updatable = false
+    )
     private Long id;
 
     @Column(

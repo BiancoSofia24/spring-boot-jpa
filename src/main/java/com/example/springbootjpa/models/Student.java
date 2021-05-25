@@ -18,73 +18,64 @@ import javax.persistence.UniqueConstraint;
 
 @Entity(name = "Student")
 @Table(
-    name = "student",
+    name = "student", 
     uniqueConstraints = {
-        @UniqueConstraint(name = "student_email_unique", columnNames = "email")
-    }
-)
+        @UniqueConstraint(
+            name = "student_email_unique", columnNames = "email") 
+    })
 public class Student {
-    
+
     @Id
     @SequenceGenerator(
-        name = "student_sequence",
-        sequenceName = "student_sequence",
+        name = "student_sequence", 
+        sequenceName = "student_sequence", 
         allocationSize = 1
     )
     @GeneratedValue(
-        strategy = GenerationType.SEQUENCE,
+        strategy = GenerationType.SEQUENCE, 
         generator = "student_sequence"
     )
-    @Column(
-        name = "id",
-        updatable = false
-    )
+    @Column(name = "id")
     private Long id;
 
-    @Column(
-        name = "first_name",
-        nullable = false,
-        columnDefinition = "TEXT"
-    )
+    @Column(name = "first_name", nullable = false, columnDefinition = "TEXT")
     private String firstName;
 
-    @Column(
-        name = "last_name",
-        nullable = false,
-        columnDefinition = "TEXT"
-    )
+    @Column(name = "last_name", nullable = false, columnDefinition = "TEXT")
     private String lastName;
 
-    @Column(
-        name = "email",
-        nullable = false,
-        columnDefinition = "TEXT"
-    )
+    @Column(name = "email", nullable = false, columnDefinition = "TEXT")
     private String email;
 
-    @Column(
-        name = "age",
-        nullable = false
+    @Column(name = "age", nullable = false
+
     )
     private Integer age;
 
     @OneToOne(
-        mappedBy = "student",
-        orphanRemoval = true,
+        mappedBy = "student", 
+        orphanRemoval = true, 
         cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
     )
     private StudentIdCard studentIdCard;
 
     @OneToMany(
-        mappedBy = "student",
-        orphanRemoval = true,
-        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        mappedBy = "student", 
+        orphanRemoval = true, 
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, 
         fetch = FetchType.LAZY
     )
     private List<Book> books = new ArrayList<>();
 
-    public Student() {
-    }
+    @OneToMany(
+        cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+        mappedBy = "student"
+    )
+    private List<Enrolment> enrolments = new ArrayList<>();
+    
+        public Student() {
+    
+        }
 
     public Student(String firstName, String lastName, String email, Integer age) {
         this.firstName = firstName;
@@ -94,7 +85,7 @@ public class Student {
     }
 
     public Long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(Long id) {
@@ -102,7 +93,7 @@ public class Student {
     }
 
     public String getFirstName() {
-        return this.firstName;
+        return firstName;
     }
 
     public void setFirstName(String firstName) {
@@ -110,7 +101,7 @@ public class Student {
     }
 
     public String getLastName() {
-        return this.lastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
@@ -118,7 +109,7 @@ public class Student {
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     public void setEmail(String email) {
@@ -126,7 +117,7 @@ public class Student {
     }
 
     public Integer getAge() {
-        return this.age;
+        return age;
     }
 
     public void setAge(Integer age) {
@@ -155,14 +146,28 @@ public class Student {
         return books;
     }
 
+    public List<Enrolment> getEnrolments() {
+        return enrolments;
+    }
+
+    public void addEnrolment(Enrolment enrolment) {
+        if (!enrolments.contains(enrolment)) {
+            enrolments.add(enrolment);
+        }
+    }
+
+    public void removeEnrolment(Enrolment enrolment) {
+        enrolments.remove(enrolment);
+    }
+
     @Override
     public String toString() {
-        return "Student{" +
-            " id='" + getId() + "'" +
-            ", firstName='" + getFirstName() + "'" +
-            ", lastName='" + getLastName() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", age='" + getAge() + "'" +
-            "}";
+        return "Student{" + 
+            "id=" + id + 
+            ", firstName='" + firstName + '\'' + 
+            ", lastName='" + lastName + '\'' + 
+            ", email='" + email + '\'' + 
+            ", age=" + age + 
+            '}';
     }
 }
