@@ -3,68 +3,66 @@ package com.example.springbootjpa.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-@Entity(
-    name = "Course"
-)
-@Table(
-    name = "course"
-)
+@Entity(name = "Course")
+@Table(name = "course")
 public class Course {
-    
+
     @Id
     @SequenceGenerator(
-        name = "course_sequence",
-        sequenceName = "course_sequence",
-        allocationSize = 1
+            name = "course_sequence",
+            sequenceName = "course_sequence",
+            allocationSize = 1
     )
     @GeneratedValue(
-        strategy = GenerationType.SEQUENCE,
-        generator = "course_sequence"
+            strategy = GenerationType.SEQUENCE,
+            generator = "course_sequence"
     )
     @Column(
-        name = "id",
-        updatable = false
+            name = "id",
+            updatable = false
     )
     private Long id;
 
     @Column(
-        name = "name",
-        nullable = false,
-        columnDefinition = "TEXT"
+            name = "name",
+            nullable = false,
+            columnDefinition = "TEXT"
     )
     private String name;
 
     @Column(
-        name = "category",
-        nullable = false,
-        columnDefinition = "TEXT"
+            name = "category",
+            nullable = false,
+            columnDefinition = "TEXT"
     )
     private String category;
 
-    @ManyToMany(
-        mappedBy = "courses"
+    @OneToMany(
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            mappedBy = "course"
     )
-    private List<Student> students = new ArrayList<>();
-
-    public Course() {
-    }
+    private List<Enrolment> enrolments = new ArrayList<>();
 
     public Course(String name, String category) {
         this.name = name;
         this.category = category;
     }
 
+    public Course() {
+    }
+
     public Long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(Long id) {
@@ -72,7 +70,7 @@ public class Course {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public void setName(String name) {
@@ -80,24 +78,34 @@ public class Course {
     }
 
     public String getCategory() {
-        return this.category;
+        return category;
     }
 
     public void setCategory(String category) {
         this.category = category;
     }
 
-    public List<Student> getStudents() {
-        return this.students;
+    public List<Enrolment> getEnrolments() {
+        return enrolments;
+    }
+
+    public void addEnrolment(Enrolment enrolment) {
+        if (!enrolments.contains(enrolment)) {
+            enrolments.add(enrolment);
+        }
+    }
+
+    public void removeEnrolment(Enrolment enrolment) {
+        enrolments.remove(enrolment);
     }
 
     @Override
     public String toString() {
         return "Course{" +
-            " id='" + getId() + "'" +
-            ", name='" + getName() + "'" +
-            ", category='" + getCategory() + "'" +
-            "}";
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", category='" + category + '\'' +
+                '}';
     }
-
+    
 }
